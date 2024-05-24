@@ -4,6 +4,8 @@ import { useFormik } from "formik";
 import { loginSchema } from "../schema";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/slicers/authSlicer";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 function Login() {
   const dispatch = useDispatch();
@@ -24,12 +26,32 @@ function Login() {
     initialValues,
     validationSchema: loginSchema,
 
-    onSubmit: (values, action) => {
-      dispatch(setUserData(values));
-      action.resetForm();
-      handleCloseModel();
+    onSubmit: (values) => {
+      handleLogin(values);
     },
   });
+
+  const handleLogin = async (values) => {
+    const data = {
+      email: values.email,
+      password: values.password,
+    };
+
+    axios
+      .post("http://localhost:4001/user/login", data)
+      .then((response) => {
+        if (response.status === 200) {
+          dispatch(setUserData(response.data?.user));
+          handleCloseModel();
+          resetForm();
+        }
+      })
+      .catch((error) => {
+        resetForm();
+
+        toast.error(error?.response?.data?.message);
+      });
+  };
 
   const handleCloseModel = () => {
     document.getElementById("my_modal_3").close();

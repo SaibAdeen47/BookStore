@@ -9,10 +9,8 @@ function Cards({ item }) {
             <img src={item.image} alt="Bookes" />
           </figure>
           <div className="card-body">
-            <h2 className="card-title">
-              {item.name}
-              <div className="badge badge-secondary">{item.category}</div>
-            </h2>
+            <h2 className="card-title">{item.name}</h2>
+            <div className="badge badge-secondary">{item.category}</div>
             <p>{item.title}</p>
             <div className="card-actions justify-between">
               <div className="badge badge-outline">${item.price}</div>

@@ -7,6 +7,8 @@ import { useDispatch } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
 import { setUserData } from "../redux/slicers/authSlicer";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 function Signup() {
   const dispatch = useDispatch();
@@ -29,12 +31,32 @@ function Signup() {
   } = useFormik({
     initialValues,
     validationSchema: signUpSchema,
-    onSubmit: (values, action) => {
-      dispatch(setUserData(values));
-      action.resetForm();
-      navigate("/");
+    onSubmit: (values) => {
+      handleSignUp(values);
     },
   });
+
+  const handleSignUp = async (values) => {
+    const data = {
+      fullName: values.name,
+      email: values.email,
+      password: values.password,
+    };
+
+    axios
+      .post("http://localhost:4001/user/signup", data)
+      .then((response) => {
+        if (response.status === 201) {
+          dispatch(setUserData(response.data));
+          navigate("/");
+        }
+      })
+      .catch((error) => {
+        resetForm();
+        toast.error(error?.response?.data?.message);
+      });
+  };
+
   return (
     <>
       <div className="flex h-screen items-center justify-center">

@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Login from "./Login";
+import { useDispatch, useSelector } from "react-redux";
+import { signOut, userData } from "../redux/slicers/authSlicer";
 
 function Navbar() {
   const [isScroll, setIsScroll] = useState(false);
+  const userInfo = useSelector(userData);
 
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
   );
+  const dispatch = useDispatch();
 
   const element = document.documentElement;
   useEffect(() => {
@@ -151,12 +155,18 @@ function Navbar() {
 
             <div className="">
               <a
-                className="bg-black text-white px-4 py-2.5 rounded-md cursor-pointer hover:bg-slate-700 duration-300 "
-                onClick={() =>
-                  document.getElementById("my_modal_3").showModal()
+                className={
+                  userInfo?.accessToken
+                    ? "bg-red-600  text-white px-4 py-2.5 rounded-md cursor-pointer hover:bg-red-400 duration-300"
+                    : "bg-black text-white px-4 py-2.5 rounded-md cursor-pointer hover:bg-slate-700 duration-300 "
                 }
+                onClick={() => {
+                  userInfo?.accessToken
+                    ? dispatch(signOut({}))
+                    : document.getElementById("my_modal_3").showModal();
+                }}
               >
-                Login
+                {userInfo?.accessToken ? "Logout" : "Login"}
               </a>
               <Login />
             </div>
